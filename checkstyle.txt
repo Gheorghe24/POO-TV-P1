@@ -1,0 +1,4 @@
+Starting audit...
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\io\User.java:18:44: '15' is a magic number. [MagicNumber]
+Audit done.
+Checkstyle ends with 1 errors.
