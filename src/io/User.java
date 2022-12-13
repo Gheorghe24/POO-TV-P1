@@ -14,10 +14,24 @@ import lombok.Setter;
 @NoArgsConstructor
 public final class User {
     private Credentials credentials;
-    private Integer tokensCount;
+    private Integer tokensCount = 0;
     private Integer numFreePremiumMovies = 15;
-    private ArrayList<Movie> purchasedMovies;
-    private ArrayList<Movie> watchedMovies;
-    private ArrayList<Movie> likedMovies;
-    private ArrayList<Movie> ratedMovies;
+    private ArrayList<Movie> purchasedMovies = new ArrayList<>();
+    private ArrayList<Movie> watchedMovies = new ArrayList<>();
+    private ArrayList<Movie> likedMovies = new ArrayList<>();
+    private ArrayList<Movie> ratedMovies = new ArrayList<>();
+
+    public User(User user) {
+        this.credentials = new Credentials(user.credentials);
+        this.tokensCount = user.tokensCount;
+        this.numFreePremiumMovies = user.numFreePremiumMovies;
+        this.purchasedMovies = new ArrayList<>();
+        this.purchasedMovies.addAll(user.purchasedMovies);
+        this.watchedMovies = new ArrayList<>();
+        this.watchedMovies.addAll(user.watchedMovies);
+        this.likedMovies = new ArrayList<>();
+        this.likedMovies.addAll(user.likedMovies);
+        this.ratedMovies = new ArrayList<>();
+        this.ratedMovies.addAll(user.ratedMovies);
+    }
 }

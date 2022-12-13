@@ -17,7 +17,7 @@ public class Movie {
     private String name;
     private Integer year;
     private Integer duration;
-    private ArrayList<String> genres;
-    private ArrayList<String> actors;
-    private ArrayList<String> countriesBanned;
+    private ArrayList<String> genres = new ArrayList<>();
+    private ArrayList<String> actors = new ArrayList<>();
+    private ArrayList<String> countriesBanned = new ArrayList<>();
 }
