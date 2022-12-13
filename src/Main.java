@@ -5,7 +5,7 @@ import io.Input;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import platform.Page;
+import actions.Page;
 import platform.Platform;
 
 public final class Main {
@@ -25,8 +25,9 @@ public final class Main {
                 .name("homepage")
                 .moviesList(new ArrayList<>())
                 .build();
-        Platform platform = new Platform(input, arrayNode, currentPage);
+        Platform platform = new Platform(input, arrayNode, currentPage, new ArrayList<>());
         platform.executeListOfActions();
         objectWriter.writeValue(new File(args[1]), arrayNode);
+        platform.prepareForNewEntry();
     }
 }

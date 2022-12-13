@@ -34,4 +34,13 @@ public final class User {
         this.ratedMovies = new ArrayList<>();
         this.ratedMovies.addAll(user.ratedMovies);
     }
+
+    public void resetUser() {
+        this.purchasedMovies = new ArrayList<>();
+        this.watchedMovies = new ArrayList<>();
+        this.likedMovies = new ArrayList<>();
+        this.ratedMovies = new ArrayList<>();
+        this.tokensCount = 0;
+        this.numFreePremiumMovies = 15;
+    }
 }

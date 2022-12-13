@@ -3,32 +3,6 @@
   "currentMoviesList" : [ ],
   "currentUser" : null
 }, {
-  "error" : null,
-  "currentMoviesList" : [ ],
-  "currentUser" : {
-    "credentials" : {
-      "name" : "Ramsi",
-      "password" : "numiplacevelea",
-      "accountType" : "standard",
-      "country" : "Ireland",
-      "balance" : "300"
-    },
-    "tokensCount" : 0,
-    "numFreePremiumMovies" : 15,
-    "purchasedMovies" : [ ],
-    "watchedMovies" : [ ],
-    "likedMovies" : [ ],
-    "ratedMovies" : [ ]
-  }
-}, {
-  "error" : "Error",
-  "currentMoviesList" : [ ],
-  "currentUser" : null
-}, {
-  "error" : "Error",
-  "currentMoviesList" : [ ],
-  "currentUser" : null
-}, {
   "error" : "Error",
   "currentMoviesList" : [ ],
   "currentUser" : null
@@ -37,10 +11,10 @@
   "currentMoviesList" : [ ],
   "currentUser" : {
     "credentials" : {
-      "name" : "Eduard",
-      "password" : "secret",
+      "name" : "Iancu",
+      "password" : "corega",
       "accountType" : "standard",
-      "country" : "Romania",
+      "country" : "Japan",
       "balance" : "50"
     },
     "tokensCount" : 0,

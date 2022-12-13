@@ -60,18 +60,6 @@
   "actions": [
     {
       "type": "change page",
-      "page": "login"
-    },
-    {
-      "type": "on page",
-      "feature": "login",
-      "credentials": {
-        "name": "Eduard",
-        "password": "parolamea"
-      }
-    },
-    {
-      "type": "change page",
       "page": "register"
     },
     {
@@ -81,48 +69,23 @@
         "name": "Ramsi",
         "password": "numiplacevelea",
         "accountType": "standard",
-        "country": "Ireland",
+        "country": "Russia",
         "balance": "300"
       }
     },
     {
       "type": "change page",
-      "page": "login"
+      "page": "movies"
     },
     {
       "type": "on page",
-      "feature": "login",
-      "credentials": {
-        "name": "Ramsi",
-        "password": "numiplacevelea"
-      }
-    },
-    {
-      "type": "change page",
-      "page": "logout"
-    },
-    {
-      "type": "change page",
-      "page": "login"
-    },
-    {
-      "type": "on page",
-      "feature": "login",
-      "credentials": {
-        "name": "Eduard",
-        "password": "nicigand"
-      }
-    },
-    {
-      "type": "change page",
-      "page": "login"
-    },
-    {
-      "type": "on page",
-      "feature": "login",
-      "credentials": {
-        "name": "Eduard",
-        "password": "secret"
+      "page": "movies",
+      "feature": "filter",
+      "filters": {
+        "sort": {
+          "rating": "decreasing",
+          "duration": "decreasing"
+        }
       }
     }
   ]

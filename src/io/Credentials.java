@@ -33,10 +33,12 @@ public class Credentials {
     }
 
     public Credentials (Credentials credentials) {
-        this.name = credentials.name;
-        this.password = credentials.password;
-        this.accountType = credentials.accountType;
-        this.country = credentials.country;
-        this.balance = credentials.balance;
+        if (credentials != null) {
+            this.name = credentials.name;
+            this.password = credentials.password;
+            this.accountType = credentials.accountType;
+            this.country = credentials.country;
+            this.balance = credentials.balance;
+        }
     }
 }

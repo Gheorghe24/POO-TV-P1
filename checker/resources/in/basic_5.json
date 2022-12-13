@@ -60,18 +60,6 @@
   "actions": [
     {
       "type": "change page",
-      "page": "login"
-    },
-    {
-      "type": "on page",
-      "feature": "login",
-      "credentials": {
-        "name": "Eduard",
-        "password": "parolamea"
-      }
-    },
-    {
-      "type": "change page",
       "page": "register"
     },
     {
@@ -81,20 +69,18 @@
         "name": "Ramsi",
         "password": "numiplacevelea",
         "accountType": "standard",
-        "country": "Ireland",
+        "country": "Romania",
         "balance": "300"
       }
     },
     {
-      "type": "change page",
-      "page": "login"
-    },
-    {
       "type": "on page",
-      "feature": "login",
-      "credentials": {
-        "name": "Ramsi",
-        "password": "numiplacevelea"
+      "feature": "filter",
+      "filters": {
+        "sort": {
+          "rating": "decreasing",
+          "duration": "decreasing"
+        }
       }
     },
     {
@@ -109,21 +95,18 @@
       "type": "on page",
       "feature": "login",
       "credentials": {
-        "name": "Eduard",
-        "password": "nicigand"
+        "name": "Mihail",
+        "password": "discret"
       }
     },
     {
       "type": "change page",
-      "page": "login"
+      "page": "movies"
     },
     {
-      "type": "on page",
-      "feature": "login",
-      "credentials": {
-        "name": "Eduard",
-        "password": "secret"
-      }
+      "type": "change page",
+      "page": "see details",
+      "movie": "Titanic"
     }
   ]
 }
