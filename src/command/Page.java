@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.Action;
+import io.Contains;
 import io.Credentials;
 import io.Input;
 import io.Movie;
@@ -17,7 +18,9 @@ import lombok.Setter;
 import out.Output;
 import services.UserService;
 import strategy.filter.ContextForFilter;
+import strategy.filter.FilterActor;
 import strategy.filter.FilterCountry;
+import strategy.filter.FilterGenre;
 import strategy.filter.FilterName;
 import strategy.sort.ContextForSort;
 import strategy.sort.SortDuration;
@@ -91,6 +94,13 @@ public final class Page {
                     addPOJOToArrayNode(jsonOutput, objectMapper);
                 }
                 break;
+            case "upgrades" :
+                if (this.getCurrentUser() != null) {
+                    populateCurrentPage(pageName, null, null, currentUser);
+                } else {
+                    addPOJOToArrayNode(jsonOutput, objectMapper);
+                }
+                break;
             default: 
         }
 
@@ -155,27 +165,10 @@ public final class Page {
                     this.moviesList = new ContextForFilter<>(new FilterName())
                             .executeStrategy(inputData.getMovies(),
                                     currentUser.getCredentials().getCountry());
-                    //am de facut contains mai tarziu
                     Sort sortField = action.getFilters().getSort();
-                    if (sortField != null) {
-                        if (sortField.getRating() != null && sortField.getDuration() != null) {
-                            this.moviesList = new ContextForSort(new SortDuration())
-                                    .executeStrategy(moviesList, sortField.getDuration());
-                            if (moviesList.size() > 1) {
-                                if (moviesList.get(0).getDuration()
-                                                .equals(moviesList.get(1).getDuration())) {
-                                    this.moviesList = new ContextForSort(new SortRating())
-                                            .executeStrategy(moviesList, sortField.getRating());
-                                }
-                            }
-                        } else if (sortField.getRating() != null) {
-                            this.moviesList = new ContextForSort(new SortRating())
-                                    .executeStrategy(moviesList, sortField.getRating());
-                        } else {
-                            this.moviesList = new ContextForSort(new SortDuration())
-                                    .executeStrategy(moviesList, sortField.getDuration());
-                        }
-                    }
+                    sortInputMovies(sortField);
+                    Contains containsField = action.getFilters().getContains();
+                    filterInputMoviesByContains(containsField);
                     addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
                 } else {
                     addPOJOToArrayNode(jsonOutput, objectMapper);
@@ -183,6 +176,41 @@ public final class Page {
             }
 
             default -> {
+            }
+        }
+    }
+
+    private void filterInputMoviesByContains(final Contains containsField) {
+        if (containsField != null) {
+            if (containsField.getActors() != null) {
+                this.moviesList = new ContextForFilter<>(new FilterActor())
+                        .executeStrategy(moviesList, containsField.getActors());
+            }
+            if (containsField.getGenre() != null) {
+                this.moviesList = new ContextForFilter<>(new FilterGenre())
+                        .executeStrategy(moviesList, containsField.getGenre());
+            }
+        }
+    }
+
+    private void sortInputMovies(final Sort sortField) {
+        if (sortField != null) {
+            if (sortField.getRating() != null && sortField.getDuration() != null) {
+                this.moviesList = new ContextForSort(new SortDuration())
+                        .executeStrategy(moviesList, sortField.getDuration());
+                if (moviesList.size() > 1) {
+                    if (moviesList.get(0).getDuration()
+                                    .equals(moviesList.get(1).getDuration())) {
+                        this.moviesList = new ContextForSort(new SortRating())
+                                .executeStrategy(moviesList, sortField.getRating());
+                    }
+                }
+            } else if (sortField.getRating() != null) {
+                this.moviesList = new ContextForSort(new SortRating())
+                        .executeStrategy(moviesList, sortField.getRating());
+            } else {
+                this.moviesList = new ContextForSort(new SortDuration())
+                        .executeStrategy(moviesList, sortField.getDuration());
             }
         }
     }

@@ -1,12 +1,20 @@
 package strategy.filter;
 
 import io.Movie;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public final class FilterActor implements IFilterStrategy<List<String>> {
+public final class FilterActor implements IFilterStrategy<ArrayList<String>> {
     @Override
-    public List<Movie> filterMovies(final List<Movie> movies, final List<String> field) {
-
-        return null;
+    public List<Movie> filterMovies(final List<Movie> movies, final ArrayList<String> list) {
+        return movies
+                .stream()
+                .filter(movie
+                        -> list.stream()
+                        .anyMatch(elem ->
+                                movie.getActors()
+                                        .contains(elem)))
+                        .collect(Collectors.toList());
     }
 }

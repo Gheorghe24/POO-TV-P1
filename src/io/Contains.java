@@ -1,6 +1,6 @@
 package io;
 
-import java.util.List;
+import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Contains {
-    private List<String> actors;
-    private List<String> genre;
-    private List<String> country;
+    private ArrayList<String> actors;
+    private ArrayList<String> genre;
+    private ArrayList<String> country;
 }
