@@ -21,7 +21,7 @@ public final class User {
     private ArrayList<Movie> likedMovies = new ArrayList<>();
     private ArrayList<Movie> ratedMovies = new ArrayList<>();
 
-    public User(User user) {
+    public User(final User user) {
         this.credentials = new Credentials(user.credentials);
         this.tokensCount = user.tokensCount;
         this.numFreePremiumMovies = user.numFreePremiumMovies;
@@ -35,6 +35,9 @@ public final class User {
         this.ratedMovies.addAll(user.ratedMovies);
     }
 
+    /**
+     * For each test, reinitialize list of Movies
+     */
     public void resetUser() {
         this.purchasedMovies = new ArrayList<>();
         this.watchedMovies = new ArrayList<>();

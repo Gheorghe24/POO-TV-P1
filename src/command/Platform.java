@@ -1,9 +1,5 @@
-package platform;
+package command;
 
-import actions.ChangePage;
-import actions.ICommand;
-import actions.OnPage;
-import actions.Page;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.Credentials;
 import io.Input;
@@ -20,10 +16,17 @@ public final class Platform {
 
     private List<ICommand> commandList;
 
-    public void takeCommand(ICommand command) {
+    /**
+     * @param command object
+     * method for Invoker Class
+     */
+    public void takeCommand(final ICommand command) {
         commandList.add(command);
     }
 
+    /**
+     * method for Invoker Class
+     */
     public void placeCommands() {
         for (ICommand command: commandList) {
             command.executeCommand();
@@ -31,20 +34,29 @@ public final class Platform {
         commandList.clear();
     }
 
+    /**
+     * place Commands of each type
+     */
     public void executeListOfActions() {
 
-        for (var action : inputData.getActions()) {
+        inputData.getActions().forEach(action -> {
             switch (action.getType()) {
                 case "change page" -> takeCommand(new ChangePage(currentPage, output,
-                        action.getPage()));
+                        action));
                 case "on page" -> takeCommand(new OnPage(currentPage, output, action.getFeature(),
                         inputData, new Credentials(action.getCredentials())));
+                default -> {
+                    return;
+                }
             }
-        }
+        });
 
         placeCommands();
     }
 
+    /**
+     * Preparing for New Test
+     */
     public void prepareForNewEntry() {
         currentPage.setCurrentUser(null);
         inputData.getUsers().forEach(User::resetUser);

@@ -5,8 +5,8 @@ import io.Input;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import actions.Page;
-import platform.Platform;
+import command.Page;
+import command.Platform;
 
 public final class Main {
     private Main() {

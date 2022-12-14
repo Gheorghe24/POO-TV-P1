@@ -13,20 +13,23 @@ import lombok.Builder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Movie {
+public final class Movie {
     private String name;
     private Integer year;
     private Integer duration;
     private ArrayList<String> genres = new ArrayList<>();
     private ArrayList<String> actors = new ArrayList<>();
     private ArrayList<String> countriesBanned = new ArrayList<>();
-    private int numLikes;
-    private int rating;
-    private int numRatings;
+    private Integer numLikes;
+    private Double rating;
+    private Integer numRatings;
 
+    /**
+     * For Each new Test, I reinitialize movie ratings and likes
+     */
     public void resetMovies() {
         this.numLikes = 0;
         this.numRatings = 0;
-        this.rating = 0;
+        this.rating = 0.00;
     }
 }

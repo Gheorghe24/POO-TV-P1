@@ -1,8 +1,9 @@
-package actions;
+package command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.Action;
 import io.Credentials;
 import io.Input;
 import io.Movie;
@@ -13,33 +14,34 @@ import lombok.Getter;
 import lombok.Setter;
 import out.Output;
 import services.UserService;
+import strategy.Context;
+import strategy.FilterCountry;
 
 @Getter
 @Setter
 @Builder
-public class Page {
+public final class Page {
     private String name;
     private User currentUser;
     private String startUserAction;
     private ArrayList<Movie> moviesList;
     private Movie currentMovie;
 
-    public void changePage(ArrayNode jsonOutput, String pageName) {
+    /**
+     * @param jsonOutput Output to add Json Objects
+     * @param action from Input
+     */
+    public void changePage(final ArrayNode jsonOutput, final Action action) {
         ObjectMapper objectMapper = new ObjectMapper();
+        Context<String> stringContext = new Context<String>(new FilterCountry());
+        String pageName = action.getPage();
         switch (pageName) {
             case "register" :
-                if (this.getCurrentUser() == null && this.getName().equals("homepage")) {
-                    populateCurrentPage(this, pageName);
-                } else {
-                    this.setName("homepage");
-                    addPOJOToArrayNode(jsonOutput, objectMapper);
-                }
-                break;
 
             case "login" :
-                if (this.getCurrentUser() == null && this.getName().equals("homepage"))
-                    populateCurrentPage(this, pageName);
-                else {
+                if (this.getCurrentUser() == null && this.getName().equals("homepage")) {
+                    populateCurrentPage(pageName, null, null, null);
+                } else {
                     this.setName("homepage");
                     addPOJOToArrayNode(jsonOutput, objectMapper);
                 }
@@ -47,17 +49,30 @@ public class Page {
 
             case "logout" :
                 if (this.getCurrentUser() != null) {
-                    populateCurrentPage(this, "homepage");
+                    populateCurrentPage("homepage", null, null, null);
                 } else {
                     addPOJOToArrayNode(jsonOutput, objectMapper);
                 }
                 break;
+            case "movies" :
+                if (this.getCurrentUser() != null) {
+                    populateCurrentPage(pageName, null, null, null);
+                } else {
+                    addPOJOToArrayNode(jsonOutput, objectMapper);
+                }
+            default: return;
         }
 
     }
 
-    public void onPage(ArrayNode jsonOutput, String feature,
-                               Input inputData, Credentials credentials) {
+    /**
+     * @param jsonOutput Output to add Json Objects
+     * @param feature from Input
+     * @param inputData Database/Input class from Test File
+     * @param credentials from Input for register operation
+     */
+    public void onPage(final ArrayNode jsonOutput, final String feature,
+                       final Input inputData, final Credentials credentials) {
         ObjectMapper objectMapper = new ObjectMapper();
         UserService userService = new UserService();
         switch (feature) {
@@ -93,11 +108,15 @@ public class Page {
                 }
 
             }
+            default -> {
+                return;
+            }
         }
     }
 
-    private static void addPOJOWithPopulatedOutput(ArrayNode jsonOutput, Page currentPage,
-                                                   ObjectMapper objectMapper) {
+    private void addPOJOWithPopulatedOutput(final ArrayNode jsonOutput,
+                                                   final Page currentPage,
+                                                   final ObjectMapper objectMapper) {
         ObjectNode node = objectMapper.valueToTree(Output
                 .builder()
                 .currentMoviesList(new ArrayList<>())
@@ -106,7 +125,8 @@ public class Page {
         jsonOutput.add(node);
     }
 
-    private static void addPOJOToArrayNode(ArrayNode jsonOutput, ObjectMapper objectMapper) {
+    private void addPOJOToArrayNode(final ArrayNode jsonOutput,
+                                           final ObjectMapper objectMapper) {
         ObjectNode node = objectMapper.valueToTree(Output
                 .builder()
                 .error("Error")
@@ -115,11 +135,12 @@ public class Page {
         jsonOutput.add(node);
     }
 
-    private static void populateCurrentPage(Page currentPage, String pageName) {
-        currentPage.setName(pageName);
-        currentPage.setMoviesList(null);
-        currentPage.setCurrentMovie(null);
-        currentPage.setCurrentUser(null);
+    private void populateCurrentPage(final String pageName, ArrayList<Movie> moviesList,
+                                     Movie movie, User currentUser) {
+        this.setName(pageName);
+        this.setMoviesList(moviesList);
+        this.setCurrentMovie(movie);
+        this.setCurrentUser(currentUser);
     }
 
 

@@ -5,9 +5,14 @@ import io.Input;
 import io.User;
 import java.util.ArrayList;
 
-public class UserService {
+public final class UserService {
 
-    public User checkForUserInData(Input inputData, Credentials credentials) {
+    /**
+     * @param inputData from Test
+     * @param credentials for register action
+     * @return valid user or null
+     */
+    public User checkForUserInData(final Input inputData, final Credentials credentials) {
         for (var user: inputData.getUsers()) {
             if (user.getCredentials().equals(credentials)) {
                 return new User(user);
@@ -16,7 +21,12 @@ public class UserService {
         return null;
     }
 
-    public User registerNewUser(Input inputData, Credentials credentials) {
+    /**
+     * @param inputData from Test
+     * @param credentials for register action
+     * @return registered user or null
+     */
+    public User registerNewUser(final Input inputData, final Credentials credentials) {
         if (checkForUserInData(inputData, credentials) == null) {
             var user = User
                     .builder()

@@ -12,7 +12,7 @@ import lombok.Builder;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class Credentials {
+public final class Credentials {
     private String name;
     private String password;
     private String accountType;
@@ -20,9 +20,13 @@ public class Credentials {
     private String balance;
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Credentials that = (Credentials) o;
         return Objects.equals(name, that.name) && Objects.equals(password, that.password);
     }
@@ -32,7 +36,7 @@ public class Credentials {
         return Objects.hash(name, password);
     }
 
-    public Credentials (Credentials credentials) {
+    public Credentials(final Credentials credentials) {
         if (credentials != null) {
             this.name = credentials.name;
             this.password = credentials.password;
