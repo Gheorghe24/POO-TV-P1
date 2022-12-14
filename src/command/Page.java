@@ -7,6 +7,7 @@ import io.Action;
 import io.Credentials;
 import io.Input;
 import io.Movie;
+import io.Sort;
 import io.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,8 @@ import lombok.Setter;
 import out.Output;
 import services.UserService;
 import strategy.Context;
-import strategy.FilterCountry;
-import strategy.FilterName;
+import strategy.filter.FilterCountry;
+import strategy.filter.FilterName;
 
 @Getter
 @Setter
@@ -61,9 +62,9 @@ public final class Page {
                     populateCurrentPage(pageName,
                             new Context<>(new FilterCountry())
                                     .executeStrategy(movies,
-                                            currentUser.getCredentials().getCountry())
-                            , null
-                            , currentUser);
+                                            currentUser.getCredentials().getCountry()),
+                            null,
+                            currentUser);
                     addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
                 } else {
                     addPOJOToArrayNode(jsonOutput, objectMapper);
@@ -127,6 +128,24 @@ public final class Page {
                 }
             }
 
+            case "filter" -> {
+                if (this.getName().equals("movies")) {
+                    this.moviesList = new Context<>(new FilterName())
+                            .executeStrategy(inputData.getMovies(),
+                                    currentUser.getCredentials().getCountry());
+                    //am de facut contains mai tarziu
+                    Sort sortField = action.getFilters().getSort();
+                    if (sortField != null) {
+                        if (sortField.getRating() != null && sortField.getDuration() != null) {
+
+                        }
+                    }
+                    addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
+                } else {
+                    addPOJOToArrayNode(jsonOutput, objectMapper);
+                }
+            }
+
             default -> {
                 return;
             }
@@ -136,7 +155,7 @@ public final class Page {
     private void addPOJOWithPopulatedOutput(final ArrayNode jsonOutput,
                                                    final Page currentPage,
                                                    final ObjectMapper objectMapper,
-                                            List<Movie> movies) {
+                                            final List<Movie> movies) {
         ObjectNode node = objectMapper.valueToTree(Output
                 .builder()
                 .currentMoviesList(movies)
@@ -155,12 +174,12 @@ public final class Page {
         jsonOutput.add(node);
     }
 
-    private void populateCurrentPage(final String pageName, List<Movie> moviesList,
-                                     Movie movie, User currentUser) {
+    private void populateCurrentPage(final String pageName, final List<Movie> movies,
+                                     final Movie movie, final User user) {
         this.setName(pageName);
-        this.setMoviesList(moviesList);
+        this.setMoviesList(movies);
         this.setCurrentMovie(movie);
-        this.setCurrentUser(currentUser);
+        this.setCurrentUser(user);
     }
 
 

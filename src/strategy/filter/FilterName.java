@@ -1,11 +1,11 @@
-package strategy;
+package strategy.filter;
 
 import io.Movie;
 import java.util.List;
 
-public class FilterName implements IStrategy<String>{
+public final class FilterName implements IFilterStrategy<String> {
     @Override
-    public List<Movie> filterMovies(List<Movie> movies, String field) {
+    public List<Movie> filterMovies(final List<Movie> movies, final String field) {
         return  movies
                 .stream()
                 .filter(movie
