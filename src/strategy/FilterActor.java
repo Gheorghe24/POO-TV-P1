@@ -1,12 +1,11 @@
 package strategy;
 
 import io.Movie;
-import java.util.ArrayList;
 import java.util.List;
 
-public class FilterActor implements IStrategy<ArrayList<String>>{
+public class FilterActor implements IStrategy<List<String>>{
     @Override
-    public ArrayList<Movie> filterMovies(ArrayList<Movie> movies, ArrayList<String> field) {
+    public List<Movie> filterMovies(List<Movie> movies, List<String> field) {
 
         return null;
     }

@@ -2,7 +2,7 @@ package out;
 
 import io.Movie;
 import io.User;
-import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +14,6 @@ import lombok.Setter;
 @Builder
 public final class Output {
     private String error;
-    private ArrayList<Movie> currentMoviesList;
+    private List<Movie> currentMoviesList;
     private User currentUser;
 }

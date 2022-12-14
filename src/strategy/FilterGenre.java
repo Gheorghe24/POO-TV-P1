@@ -6,7 +6,7 @@ import java.util.List;
 
 public class FilterGenre implements IStrategy<ArrayList<String>>{
     @Override
-    public ArrayList<Movie> filterMovies(ArrayList<Movie> movies, ArrayList<String> field) {
+    public List<Movie> filterMovies(List<Movie> movies, ArrayList<String> field) {
         return null;
     }
 }

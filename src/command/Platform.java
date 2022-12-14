@@ -42,8 +42,8 @@ public final class Platform {
         inputData.getActions().forEach(action -> {
             switch (action.getType()) {
                 case "change page" -> takeCommand(new ChangePage(currentPage, output,
-                        action));
-                case "on page" -> takeCommand(new OnPage(currentPage, output, action.getFeature(),
+                        action, inputData));
+                case "on page" -> takeCommand(new OnPage(currentPage, output, action,
                         inputData, new Credentials(action.getCredentials())));
                 default -> {
                     return;

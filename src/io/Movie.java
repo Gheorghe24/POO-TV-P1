@@ -20,9 +20,9 @@ public final class Movie {
     private ArrayList<String> genres = new ArrayList<>();
     private ArrayList<String> actors = new ArrayList<>();
     private ArrayList<String> countriesBanned = new ArrayList<>();
-    private Integer numLikes;
-    private Double rating;
-    private Integer numRatings;
+    private Integer numLikes = 0;
+    private Double rating = 0.00;
+    private Integer numRatings = 0;
 
     /**
      * For Each new Test, I reinitialize movie ratings and likes
