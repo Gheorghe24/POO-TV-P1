@@ -10,15 +10,21 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@Builder
 @NoArgsConstructor
+@Builder
 public final class User {
     private Credentials credentials;
+    @Builder.Default
     private Integer tokensCount = 0;
+    @Builder.Default
     private Integer numFreePremiumMovies = 15;
+    @Builder.Default
     private ArrayList<Movie> purchasedMovies = new ArrayList<>();
+    @Builder.Default
     private ArrayList<Movie> watchedMovies = new ArrayList<>();
+    @Builder.Default
     private ArrayList<Movie> likedMovies = new ArrayList<>();
+    @Builder.Default
     private ArrayList<Movie> ratedMovies = new ArrayList<>();
 
     public User(final User user) {
@@ -38,7 +44,7 @@ public final class User {
     /**
      * For each test, reinitialize list of Movies
      */
-    public void resetUser() {
+    public void prepareNewUser() {
         this.purchasedMovies = new ArrayList<>();
         this.watchedMovies = new ArrayList<>();
         this.likedMovies = new ArrayList<>();

@@ -16,9 +16,12 @@ import lombok.Getter;
 import lombok.Setter;
 import out.Output;
 import services.UserService;
-import strategy.Context;
+import strategy.filter.ContextForFilter;
 import strategy.filter.FilterCountry;
 import strategy.filter.FilterName;
+import strategy.sort.ContextForSort;
+import strategy.sort.SortDuration;
+import strategy.sort.SortRating;
 
 @Getter
 @Setter
@@ -60,7 +63,7 @@ public final class Page {
                 if (this.getCurrentUser() != null) {
                     List<Movie> movies = new ArrayList<>(input.getMovies());
                     populateCurrentPage(pageName,
-                            new Context<>(new FilterCountry())
+                            new ContextForFilter<>(new FilterCountry())
                                     .executeStrategy(movies,
                                             currentUser.getCredentials().getCountry()),
                             null,
@@ -69,7 +72,26 @@ public final class Page {
                 } else {
                     addPOJOToArrayNode(jsonOutput, objectMapper);
                 }
-            default: return;
+                break;
+            case "see details" :
+                if (this.getCurrentUser() != null && this.getName().equals("movies")) {
+                    List<Movie> movies = new ContextForFilter<>(new FilterCountry())
+                            .executeStrategy(new ArrayList<>(input.getMovies()),
+                                    currentUser.getCredentials().getCountry());
+                    List<Movie> foundMovie = new ContextForFilter<>(new FilterName())
+                            .executeStrategy(new ArrayList<>(movies),
+                                    action.getMovie());
+                    if (foundMovie.isEmpty()) {
+                        addPOJOToArrayNode(jsonOutput, objectMapper);
+                    } else {
+                        populateCurrentPage(pageName, foundMovie, foundMovie.get(0), currentUser);
+                        addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
+                    }
+                } else {
+                    addPOJOToArrayNode(jsonOutput, objectMapper);
+                }
+                break;
+            default: 
         }
 
     }
@@ -119,7 +141,7 @@ public final class Page {
             }
             case "search" -> {
                 if (this.getName().equals("movies")) {
-                    this.moviesList = new Context<>(new FilterName())
+                    this.moviesList = new ContextForFilter<>(new FilterName())
                             .executeStrategy(inputData.getMovies(),
                                     currentUser.getCredentials().getCountry());
                     addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
@@ -130,14 +152,28 @@ public final class Page {
 
             case "filter" -> {
                 if (this.getName().equals("movies")) {
-                    this.moviesList = new Context<>(new FilterName())
+                    this.moviesList = new ContextForFilter<>(new FilterName())
                             .executeStrategy(inputData.getMovies(),
                                     currentUser.getCredentials().getCountry());
                     //am de facut contains mai tarziu
                     Sort sortField = action.getFilters().getSort();
                     if (sortField != null) {
                         if (sortField.getRating() != null && sortField.getDuration() != null) {
-
+                            this.moviesList = new ContextForSort(new SortDuration())
+                                    .executeStrategy(moviesList, sortField.getDuration());
+                            if (moviesList.size() > 1) {
+                                if (moviesList.get(0).getDuration()
+                                                .equals(moviesList.get(1).getDuration())) {
+                                    this.moviesList = new ContextForSort(new SortRating())
+                                            .executeStrategy(moviesList, sortField.getRating());
+                                }
+                            }
+                        } else if (sortField.getRating() != null) {
+                            this.moviesList = new ContextForSort(new SortRating())
+                                    .executeStrategy(moviesList, sortField.getRating());
+                        } else {
+                            this.moviesList = new ContextForSort(new SortDuration())
+                                    .executeStrategy(moviesList, sortField.getDuration());
                         }
                     }
                     addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
@@ -147,7 +183,6 @@ public final class Page {
             }
 
             default -> {
-                return;
             }
         }
     }

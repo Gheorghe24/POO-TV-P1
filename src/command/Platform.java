@@ -5,6 +5,7 @@ import io.Credentials;
 import io.Input;
 import io.Movie;
 import io.User;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 
@@ -28,9 +29,7 @@ public final class Platform {
      * method for Invoker Class
      */
     public void placeCommands() {
-        for (ICommand command: commandList) {
-            command.executeCommand();
-        }
+        commandList.forEach(ICommand::executeCommand);
         commandList.clear();
     }
 
@@ -46,7 +45,6 @@ public final class Platform {
                 case "on page" -> takeCommand(new OnPage(currentPage, output, action,
                         inputData, new Credentials(action.getCredentials())));
                 default -> {
-                    return;
                 }
             }
         });
@@ -58,8 +56,12 @@ public final class Platform {
      * Preparing for New Test
      */
     public void prepareForNewEntry() {
-        currentPage.setCurrentUser(null);
-        inputData.getUsers().forEach(User::resetUser);
+        currentPage = Page.builder()
+                .currentUser(null)
+                .name("homepage")
+                .moviesList(new ArrayList<>())
+                .build();
+        inputData.getUsers().forEach(User::prepareNewUser);
         inputData.getMovies().forEach(Movie::resetMovies);
     }
 }

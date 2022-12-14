@@ -20,14 +20,10 @@ public final class Main {
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         ArrayNode arrayNode = objectMapper.createArrayNode();
 
-        Page currentPage = Page.builder()
-                .currentUser(null)
-                .name("homepage")
-                .moviesList(new ArrayList<>())
-                .build();
-        Platform platform = new Platform(input, arrayNode, currentPage, new ArrayList<>());
+        Platform platform = new Platform(input, arrayNode, Page.builder().build(), new ArrayList<>());
+        platform.prepareForNewEntry();
         platform.executeListOfActions();
         objectWriter.writeValue(new File(args[1]), arrayNode);
-        platform.prepareForNewEntry();
+
     }
 }

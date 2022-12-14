@@ -3,7 +3,6 @@ package services;
 import io.Credentials;
 import io.Input;
 import io.User;
-import java.util.ArrayList;
 
 public final class UserService {
 
@@ -13,12 +12,15 @@ public final class UserService {
      * @return valid user or null
      */
     public User checkForUserInData(final Input inputData, final Credentials credentials) {
-        for (var user: inputData.getUsers()) {
-            if (user.getCredentials().equals(credentials)) {
-                return new User(user);
-            }
-        }
-        return null;
+        return inputData
+                .getUsers()
+                .stream()
+                .filter(
+                        user1 -> user1
+                                .getCredentials()
+                                .equals(credentials))
+                                .findAny()
+                                .orElse(null);
     }
 
     /**
@@ -31,12 +33,6 @@ public final class UserService {
             var user = User
                     .builder()
                     .credentials(new Credentials(credentials))
-                    .numFreePremiumMovies(15)
-                    .likedMovies(new ArrayList<>())
-                    .purchasedMovies(new ArrayList<>())
-                    .ratedMovies(new ArrayList<>())
-                    .watchedMovies(new ArrayList<>())
-                    .tokensCount(0)
                     .build();
             inputData.getUsers().add(user);
             return user;
