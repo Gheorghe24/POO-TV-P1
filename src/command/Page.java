@@ -101,7 +101,7 @@ public final class Page {
                     addPOJOToArrayNode(jsonOutput, objectMapper);
                 }
                 break;
-            default: 
+            default:
         }
 
     }
@@ -175,9 +175,111 @@ public final class Page {
                 }
             }
 
+            case "buy tokens" -> {
+                if (this.getName().equals("upgrades")) {
+                    var balance =
+                            Integer.parseInt(this.getCurrentUser().getCredentials().getBalance());
+                    var count = Integer.parseInt(action.getCount());
+                    if (balance > count) {
+                        currentUser.setTokensCount(count);
+                        currentUser.getCredentials().setBalance(String.valueOf(balance));
+                    } else {
+                        addPOJOToArrayNode(jsonOutput, objectMapper);
+                    }
+                } else {
+                    addPOJOToArrayNode(jsonOutput, objectMapper);
+                }
+            }
+            case "buy premium account" -> {
+                if (this.getName().equals("upgrades")) {
+                    var count = currentUser.getTokensCount();
+                    if (count >= 10 && !currentUser.getCredentials().getAccountType().equals(
+                            "premium")) {
+                        currentUser.getCredentials().setAccountType("premium");
+                        currentUser.setTokensCount(count - 10);
+                    } else {
+                        addPOJOToArrayNode(jsonOutput, objectMapper);
+                    }
+                } else {
+                    addPOJOToArrayNode(jsonOutput, objectMapper);
+                }
+            }
+
+            case "purchase" -> {
+                if (this.getName().equals("upgrades")) {
+                    purchaseMovie(jsonOutput, action, objectMapper);
+                } else {
+                    addPOJOToArrayNode(jsonOutput, objectMapper);
+                }
+            }
+
+            case "watch" -> {
+                if (this.getName().equals("see details")) {
+                    watchMovie(jsonOutput, action, objectMapper);
+                } else {
+                    addPOJOToArrayNode(jsonOutput, objectMapper);
+                }
+            }
+
             default -> {
             }
         }
+    }
+
+    private void watchMovie(final ArrayNode jsonOutput, final Action action,
+                            final ObjectMapper objectMapper) {
+        var availableFromPurchasedMovies = getMoviesByName(action,
+                currentUser.getPurchasedMovies());
+        if (availableFromPurchasedMovies.isEmpty()) {
+            addPOJOToArrayNode(jsonOutput, objectMapper);
+        } else {
+            var notAvailableFromWatchedMovies = getMoviesByName(action,
+                    currentUser.getWatchedMovies());
+            if (notAvailableFromWatchedMovies.isEmpty()) {
+                currentUser.getWatchedMovies().add(
+                        new Movie(availableFromPurchasedMovies.get(0)));
+                this.currentMovie = availableFromPurchasedMovies.get(0);
+                addPOJOWithPopulatedOutput(jsonOutput, this,
+                        objectMapper, this.moviesList);
+            }
+        }
+    }
+
+    private void purchaseMovie(final ArrayNode jsonOutput, final Action action,
+                               final ObjectMapper objectMapper) {
+        List<Movie> availableMovies = getMoviesByName(action, this.moviesList);
+        if (availableMovies.size() > 0) {
+            var firstAvailableMovie = availableMovies.get(0);
+            if (!currentUser.getPurchasedMovies().contains(firstAvailableMovie)) {
+                if (currentUser.getCredentials().getAccountType().equals("premium")
+                        && currentUser.getNumFreePremiumMovies() > 0) {
+                    currentUser.setNumFreePremiumMovies(
+                            currentUser.getNumFreePremiumMovies() - 1);
+                    currentUser.getPurchasedMovies().add(
+                            new Movie(firstAvailableMovie));
+                    addPOJOWithPopulatedOutput(jsonOutput, this,
+                            objectMapper, this.moviesList);
+                } else if (currentUser.getTokensCount() >= 2) {
+                    currentUser.setTokensCount(currentUser.getTokensCount() - 2);
+                    currentUser.getPurchasedMovies().add(
+                            new Movie(firstAvailableMovie));
+                    addPOJOWithPopulatedOutput(jsonOutput, this,
+                            objectMapper, this.moviesList);
+                } else {
+                    addPOJOToArrayNode(jsonOutput, objectMapper);
+                }
+            } else {
+                addPOJOToArrayNode(jsonOutput, objectMapper);
+            }
+        } else {
+            addPOJOToArrayNode(jsonOutput, objectMapper);
+        }
+    }
+
+    private List<Movie> getMoviesByName(final Action action, final List<Movie> testedList) {
+        return new ContextForFilter<>(new FilterName())
+                .executeStrategy(testedList,
+                        action.getMovie());
     }
 
     private void filterInputMoviesByContains(final Contains containsField) {

@@ -32,4 +32,16 @@ public final class Movie {
         this.numRatings = 0;
         this.rating = 0.00;
     }
+
+    public Movie(final Movie movie) {
+        this.name = movie.getName();
+        this.year = movie.getYear();
+        this.duration = movie.getDuration();
+        this.genres = movie.getGenres();
+        this.actors = movie.getActors();
+        this.countriesBanned = movie.getCountriesBanned();
+        this.numLikes = movie.getNumLikes();
+        this.rating = movie.getRating();
+        this.numRatings = movie.getNumRatings();
+    }
 }
