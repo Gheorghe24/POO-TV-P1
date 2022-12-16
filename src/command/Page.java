@@ -79,10 +79,10 @@ public final class Page {
             case "see details" :
                 if (this.getCurrentUser() != null && this.getName().equals("movies")) {
                     List<Movie> movies = new ContextForFilter<>(new FilterCountry())
-                            .executeStrategy(new ArrayList<>(input.getMovies()),
+                            .executeStrategy(input.getMovies(),
                                     currentUser.getCredentials().getCountry());
                     List<Movie> foundMovie = new ContextForFilter<>(new FilterName())
-                            .executeStrategy(new ArrayList<>(movies),
+                            .executeStrategy(movies,
                                     action.getMovie());
                     if (foundMovie.isEmpty()) {
                         addErrorPOJOToArrayNode(jsonOutput, objectMapper);
@@ -303,6 +303,7 @@ public final class Page {
                 this.currentMovie = availableFromPurchasedMovies.get(0);
                 currentUser.getWatchedMovies().add(
                         new Movie(currentMovie));
+
                 addPOJOWithPopulatedOutput(jsonOutput, this,
                         objectMapper, new ArrayList<>(Collections.singleton(
                                 new Movie(currentMovie))));
@@ -340,7 +341,11 @@ public final class Page {
                 }
             });
         });
-        input.getMovies().forEach((m -> new Movie(movie)));
+        input.getMovies().forEach(m ->{
+            if (m.getName().equals(movie.getName())) {
+                input.getMovies().set(input.getMovies().indexOf(m), new Movie(movie));
+            }
+        });
     }
 
 

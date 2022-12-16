@@ -1,6 +1,7 @@
 package strategy.filter;
 
 import io.Movie;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class FilterName implements IFilterStrategy<String> {

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonPropertyOrder({"users", "movies", "actions"})
-public class Input {
+public final class Input {
     @JsonProperty("users")
     private ArrayList<User> users;
     @JsonProperty("movies")
@@ -20,7 +20,7 @@ public class Input {
 
     @JsonIgnoreProperties
     private static Input input = null;
-    public Input() {
+    private Input() {
     }
 
     /**
