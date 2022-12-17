@@ -14,8 +14,10 @@ import strategy.filter.FilterActor;
 import strategy.filter.FilterGenre;
 import strategy.filter.FilterName;
 import strategy.sort.ContextForSort;
+import strategy.sort.SortComplex;
 import strategy.sort.SortDuration;
 import strategy.sort.SortRating;
+import utils.OrderPair;
 
 @NoArgsConstructor
 public final class MovieService {
@@ -73,15 +75,9 @@ public final class MovieService {
         List<Movie> sortedList = new ArrayList<>(moviesList);
         if (sortField != null) {
             if (sortField.getRating() != null && sortField.getDuration() != null) {
-                sortedList = new ContextForSort(new SortDuration())
-                        .executeStrategy(moviesList, sortField.getDuration());
-                if (moviesList.size() > 1) {
-                    if (moviesList.get(0).getDuration()
-                            .equals(moviesList.get(1).getDuration())) {
-                        sortedList = new ContextForSort(new SortRating())
-                                .executeStrategy(moviesList, sortField.getRating());
-                    }
-                }
+                OrderPair pair = new OrderPair(sortField.getRating(), sortField.getDuration());
+                sortedList = new ContextForSort(new SortComplex())
+                        .executeStrategy(moviesList, pair);
             } else if (sortField.getRating() != null) {
                 sortedList = new ContextForSort(new SortRating())
                         .executeStrategy(moviesList, sortField.getRating());

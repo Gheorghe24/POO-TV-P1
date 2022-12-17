@@ -160,9 +160,12 @@ public final class Page {
             }
             case "search" -> {
                 if (this.getName().equals("movies")) {
-                    this.moviesList = new ContextForFilter<>(new FilterName())
+                    this.moviesList = new ContextForFilter<>(new FilterCountry())
                             .executeStrategy(inputData.getMovies(),
                                     currentUser.getCredentials().getCountry());
+                    this.moviesList = new ContextForFilter<>(new FilterName())
+                            .executeStrategy(this.moviesList,
+                                    action.getStartsWith());
                     outputService.addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper,
                             this.moviesList);
                 } else {
@@ -272,6 +275,7 @@ public final class Page {
             int counterOfRatings = movie.getNumRatings();
             movie.setRating((movie.getRating() * counterOfRatings + action.getRate())
                     / (counterOfRatings + 1));
+            movie.setNumRatings(movie.getNumRatings() + 1);
             movieService.updateMovieInAllObjects(movie, input, currentUser);
             currentUser.getRatedMovies().add(movie);
             outputService.addPOJOWithPopulatedOutput(jsonOutput, this,

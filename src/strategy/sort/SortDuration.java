@@ -4,7 +4,7 @@ import io.Movie;
 import java.util.Comparator;
 import java.util.List;
 
-public final class SortDuration implements ISortStrategy {
+public final class SortDuration implements ISortStrategy<String> {
     @Override
     public List<Movie> sortMovies(final List<Movie> movies, final String order) {
         if (order.equals("increasing")) {
@@ -13,5 +13,6 @@ public final class SortDuration implements ISortStrategy {
         }
         return movies.stream()
                 .sorted(Comparator.comparing(Movie::getDuration).reversed()).toList();
+
     }
 }

@@ -1,2 +1,11 @@
 Starting audit...
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\strategy\sort\SortComplex.java:4:8: Unused import - java.util.ArrayList. [UnusedImports]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\strategy\sort\SortComplex.java:9:60: '>' is followed by an illegal character. [GenericWhitespace]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\strategy\sort\SortComplex.java:9:61: '{' is not preceded with whitespace. [WhitespaceAround]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\strategy\sort\SortComplex.java:10:5: Class 'SortComplex' looks like designed for extension (can be subclassed), but the method 'sortMovies' does not have javadoc that explains how to do that safely. If class is not designed for extension consider making the class 'SortComplex' final or making the method 'sortMovies' static/final/abstract/empty, or adding allowed annotation for the method. [DesignForExtension]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\strategy\sort\SortComplex.java:11:35: Parameter movies should be final. [FinalParameters]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\strategy\sort\SortComplex.java:11:55: Parameter order should be final. [FinalParameters]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\strategy\sort\SortComplex.java:17:16: 'if' is not followed by whitespace. [WhitespaceAround]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\strategy\sort\SortComplex.java:27: Line is longer than 100 characters (found 108). [LineLength]
 Audit done.
+Checkstyle ends with 8 errors.
