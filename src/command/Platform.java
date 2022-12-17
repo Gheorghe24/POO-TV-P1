@@ -8,6 +8,8 @@ import io.User;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import services.MovieService;
+import services.OutputService;
 
 @AllArgsConstructor
 public final class Platform {
@@ -60,6 +62,8 @@ public final class Platform {
                 .currentUser(null)
                 .name("homepage")
                 .moviesList(new ArrayList<>())
+                .movieService(new MovieService())
+                .outputService(new OutputService())
                 .build();
         inputData.getUsers().forEach(User::prepareNewUser);
         inputData.getMovies().forEach(Movie::resetMovies);

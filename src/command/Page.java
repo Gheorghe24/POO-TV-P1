@@ -2,7 +2,6 @@ package command;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.Action;
 import io.Contains;
 import io.Credentials;
@@ -16,16 +15,12 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import out.Output;
+import services.MovieService;
+import services.OutputService;
 import services.UserService;
 import strategy.filter.ContextForFilter;
-import strategy.filter.FilterActor;
 import strategy.filter.FilterCountry;
-import strategy.filter.FilterGenre;
 import strategy.filter.FilterName;
-import strategy.sort.ContextForSort;
-import strategy.sort.SortDuration;
-import strategy.sort.SortRating;
 import utils.Utils;
 
 @Getter
@@ -37,6 +32,8 @@ public final class Page {
     private String startUserAction;
     private List<Movie> moviesList;
     private Movie currentMovie;
+    private MovieService movieService;
+    private OutputService outputService;
 
     /**
      * @param jsonOutput Output to add Json Objects
@@ -53,7 +50,7 @@ public final class Page {
                     populateCurrentPage(pageName, new ArrayList<>(), null, null);
                 } else {
                     this.setName("homepage");
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
                 break;
 
@@ -61,7 +58,7 @@ public final class Page {
                 if (this.getCurrentUser() != null) {
                     populateCurrentPage("homepage", new ArrayList<>(), null, null);
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
                 break;
             case "movies" :
@@ -72,9 +69,10 @@ public final class Page {
                                             currentUser.getCredentials().getCountry()),
                             null,
                             currentUser);
-                    addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
+                    outputService.addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper,
+                            this.moviesList);
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
                 break;
             case "see details" :
@@ -86,20 +84,21 @@ public final class Page {
                             .executeStrategy(movies,
                                     action.getMovie());
                     if (foundMovie.isEmpty()) {
-                        addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                        outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                     } else {
                         populateCurrentPage(pageName, foundMovie, foundMovie.get(0), currentUser);
-                        addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
+                        outputService.addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper,
+                                this.moviesList);
                     }
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
                 break;
             case "upgrades" :
                 if (this.getCurrentUser() != null) {
                     populateCurrentPage(pageName, null, null, currentUser);
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
                 break;
             default:
@@ -125,12 +124,13 @@ public final class Page {
 
                     if (userFound != null) {
                         this.setCurrentUser(userFound);
-                        addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
+                        outputService.addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper,
+                                this.moviesList);
                     } else {
-                        addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                        outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                     }
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
                 this.setName("homepage");
             }
@@ -140,13 +140,14 @@ public final class Page {
                     var registeredNewUser = userService.registerNewUser(inputData, credentials);
                     if (registeredNewUser != null) {
                         this.setCurrentUser(registeredNewUser);
-                        addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
+                        outputService.addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper,
+                                this.moviesList);
                     } else {
-                        addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                        outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                         this.setName("homepage");
                     }
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                     this.setName("homepage");
                 }
             }
@@ -155,9 +156,10 @@ public final class Page {
                     this.moviesList = new ContextForFilter<>(new FilterName())
                             .executeStrategy(inputData.getMovies(),
                                     currentUser.getCredentials().getCountry());
-                    addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
+                    outputService.addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper,
+                            this.moviesList);
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
             }
 
@@ -167,12 +169,14 @@ public final class Page {
                             .executeStrategy(inputData.getMovies(),
                                     currentUser.getCredentials().getCountry());
                     Sort sortField = action.getFilters().getSort();
-                    sortInputMovies(sortField);
+                    this.moviesList = movieService.sortInputMovies(sortField, this.moviesList);
                     Contains containsField = action.getFilters().getContains();
-                    filterInputMoviesByContains(containsField);
-                    addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper, this.moviesList);
+                    this.moviesList = movieService.filterInputMoviesByContains(containsField,
+                            moviesList);
+                    outputService.addPOJOWithPopulatedOutput(jsonOutput, this, objectMapper,
+                            this.moviesList);
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
             }
 
@@ -185,10 +189,10 @@ public final class Page {
                         currentUser.setTokensCount(count);
                         currentUser.getCredentials().setBalance(String.valueOf(balance - count));
                     } else {
-                        addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                        outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                     }
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
             }
             case "buy premium account" -> {
@@ -200,10 +204,10 @@ public final class Page {
                         currentUser.getCredentials().setAccountType("premium");
                         currentUser.setTokensCount(count - Utils.TOKEN_COST);
                     } else {
-                        addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                        outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                     }
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
             }
 
@@ -211,7 +215,7 @@ public final class Page {
                 if (this.getName().equals("upgrades") || this.getName().equals("see details")) {
                     purchaseMovie(jsonOutput, action, objectMapper);
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
             }
 
@@ -219,7 +223,7 @@ public final class Page {
                 if (this.getName().equals("see details")) {
                     watchMovie(jsonOutput, action, objectMapper);
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
             }
 
@@ -227,7 +231,7 @@ public final class Page {
                 if (this.getName().equals("see details")) {
                     likeMovie(jsonOutput, action, objectMapper, inputData);
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
             }
 
@@ -235,7 +239,7 @@ public final class Page {
                 if (this.getName().equals("see details")) {
                     rateMovie(jsonOutput, action, objectMapper, inputData);
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
             }
 
@@ -250,22 +254,24 @@ public final class Page {
         if (currentUser.getWatchedMovies().isEmpty()
                 || action.getRate() < 1
                 || action.getRate() > Utils.MAXIMUM_RATE) {
-            addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
             return;
         }
-        if (!getMoviesByName(extractMovieName(action), currentUser.getWatchedMovies()).isEmpty()) {
-            Movie movie = getMoviesByName(extractMovieName(action),
+        if (!movieService.getMoviesByName(movieService.extractMovieName(action, currentMovie),
+                currentUser.getWatchedMovies()).isEmpty()) {
+            Movie movie = movieService.getMoviesByName(movieService.extractMovieName(action,
+                            currentMovie),
                     currentUser.getWatchedMovies()).get(0);
             int counterOfRatings = movie.getNumRatings();
             movie.setRating((movie.getRating() * counterOfRatings + action.getRate())
                     / (counterOfRatings + 1));
-            updateMovieInAllObjects(movie, input);
+            movieService.updateMovieInAllObjects(movie, input, currentUser);
             currentUser.getRatedMovies().add(movie);
-            addPOJOWithPopulatedOutput(jsonOutput, this,
+            outputService.addPOJOWithPopulatedOutput(jsonOutput, this,
                     objectMapper, new ArrayList<>(Collections.singleton(
                             new Movie(movie))));
         } else {
-            addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
         }
     }
 
@@ -276,93 +282,48 @@ public final class Page {
     private void likeMovie(final ArrayNode jsonOutput, final Action action,
                            final ObjectMapper objectMapper, final Input inputData) {
         if (currentUser.getWatchedMovies().isEmpty()) {
-            addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
             return;
         }
-        if (!getMoviesByName(action.getMovie(), currentUser.getWatchedMovies()).isEmpty()) {
+        if (!movieService.getMoviesByName(action.getMovie(),
+                currentUser.getWatchedMovies()).isEmpty()) {
             Movie movie =
-                    getMoviesByName(extractMovieName(action),
+                    movieService.getMoviesByName(movieService.extractMovieName(action,
+                                    currentMovie),
                             currentUser.getWatchedMovies()).get(0);
             movie.setNumLikes(movie.getNumLikes() + 1);
             currentMovie = new Movie(movie);
-            updateMovieInAllObjects(movie, inputData);
+            movieService.updateMovieInAllObjects(movie, inputData, currentUser);
             currentUser.getLikedMovies().add(movie);
-            addPOJOWithPopulatedOutput(jsonOutput, this,
+            outputService.addPOJOWithPopulatedOutput(jsonOutput, this,
                     objectMapper, new ArrayList<>(Collections.singleton(
                             new Movie(movie))));
         } else {
-            addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
         }
     }
 
     private void watchMovie(final ArrayNode jsonOutput, final Action action,
                             final ObjectMapper objectMapper) {
         if (currentUser.getPurchasedMovies().isEmpty()) {
-            addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
         } else {
-            String movieName = extractMovieName(action);
-            List<Movie> availableFromPurchasedMovies = getMoviesByName(movieName,
+            String movieName = movieService.extractMovieName(action, currentMovie);
+            List<Movie> availableFromPurchasedMovies = movieService.getMoviesByName(movieName,
                     currentUser.getPurchasedMovies());
-            List<Movie> notFoundInWatchedMovies = getMoviesByName(movieName,
+            List<Movie> notFoundInWatchedMovies = movieService.getMoviesByName(movieName,
                     currentUser.getWatchedMovies());
             if (availableFromPurchasedMovies.isEmpty()) {
-                addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
             } else if (notFoundInWatchedMovies.isEmpty()) {
                 this.currentMovie = availableFromPurchasedMovies.get(0);
                 currentUser.getWatchedMovies().add(
                         new Movie(currentMovie));
 
-                addPOJOWithPopulatedOutput(jsonOutput, this,
+                outputService.addPOJOWithPopulatedOutput(jsonOutput, this,
                         objectMapper, new ArrayList<>(Collections.singleton(
                                 new Movie(currentMovie))));
             }
-        }
-    }
-
-    /**
-     * Increment number of likes for every list containing movie.name
-     */
-    public void updateMovieInAllObjects(final Movie movie, final Input input) {
-        input.getUsers().forEach((x) -> {
-            x.getWatchedMovies().forEach((y) -> {
-                if (y.getName().equals(movie.getName())) {
-                    x.getWatchedMovies().set(x.getWatchedMovies().indexOf(y), new Movie(movie));
-                }
-
-            });
-            x.getLikedMovies().forEach((y) -> {
-                if (!x.getCredentials().getName().equals(currentUser.getCredentials().getName())
-                        && y.getName().equals(movie.getName())) {
-                    x.getLikedMovies().set(x.getLikedMovies().indexOf(y), new Movie(movie));
-                }
-
-            });
-            x.getPurchasedMovies().forEach((y) -> {
-                if (y.getName().equals(movie.getName())) {
-                    x.getPurchasedMovies().set(x.getPurchasedMovies().indexOf(y), new Movie(movie));
-                }
-
-            });
-            x.getRatedMovies().forEach((y) -> {
-                if (y.getName().equals(movie.getName())) {
-                    x.getRatedMovies().set(x.getRatedMovies().indexOf(y), new Movie(movie));
-                }
-            });
-        });
-        input.getMovies().forEach(m -> {
-            if (m.getName().equals(movie.getName())) {
-                input.getMovies().set(input.getMovies().indexOf(m), new Movie(movie));
-            }
-        });
-    }
-
-
-
-    private String extractMovieName(final Action action) {
-        if (action.getMovie() != null) {
-            return action.getMovie();
-        } else {
-            return currentMovie.getName();
         }
     }
 
@@ -370,9 +331,9 @@ public final class Page {
                                final ObjectMapper objectMapper) {
         List<Movie> availableMovies;
         if (action.getMovie() != null) {
-            availableMovies = getMoviesByName(action.getMovie(), this.moviesList);
+            availableMovies = movieService.getMoviesByName(action.getMovie(), this.moviesList);
         } else {
-            availableMovies = getMoviesByName(currentMovie.getName(), this.moviesList);
+            availableMovies = movieService.getMoviesByName(currentMovie.getName(), this.moviesList);
         }
         if (!availableMovies.isEmpty()) {
             var firstAvailableMovie = availableMovies.get(0);
@@ -383,87 +344,23 @@ public final class Page {
                             currentUser.getNumFreePremiumMovies() - 1);
                     currentUser.getPurchasedMovies().add(
                             new Movie(firstAvailableMovie));
-                    addPOJOWithPopulatedOutput(jsonOutput, this,
+                    outputService.addPOJOWithPopulatedOutput(jsonOutput, this,
                             objectMapper, availableMovies);
                 } else if (currentUser.getTokensCount() >= 2) {
                     currentUser.setTokensCount(currentUser.getTokensCount() - 2);
                     currentUser.getPurchasedMovies().add(
                             new Movie(firstAvailableMovie));
-                    addPOJOWithPopulatedOutput(jsonOutput, this,
+                    outputService.addPOJOWithPopulatedOutput(jsonOutput, this,
                             objectMapper, availableMovies);
                 } else {
-                    addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
             } else {
-                addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+                outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
             }
         } else {
-            addErrorPOJOToArrayNode(jsonOutput, objectMapper);
+            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
         }
-    }
-
-
-    private List<Movie> getMoviesByName(final String fieldFilter, final List<Movie> testedList) {
-        return new ContextForFilter<>(new FilterName())
-                .executeStrategy(testedList,
-                        fieldFilter);
-    }
-
-    private void filterInputMoviesByContains(final Contains containsField) {
-        if (containsField != null) {
-            if (containsField.getActors() != null) {
-                this.moviesList = new ContextForFilter<>(new FilterActor())
-                        .executeStrategy(moviesList, containsField.getActors());
-            }
-            if (containsField.getGenre() != null) {
-                this.moviesList = new ContextForFilter<>(new FilterGenre())
-                        .executeStrategy(moviesList, containsField.getGenre());
-            }
-        }
-    }
-
-    private void sortInputMovies(final Sort sortField) {
-        if (sortField != null) {
-            if (sortField.getRating() != null && sortField.getDuration() != null) {
-                this.moviesList = new ContextForSort(new SortDuration())
-                        .executeStrategy(moviesList, sortField.getDuration());
-                if (moviesList.size() > 1) {
-                    if (moviesList.get(0).getDuration()
-                                    .equals(moviesList.get(1).getDuration())) {
-                        this.moviesList = new ContextForSort(new SortRating())
-                                .executeStrategy(moviesList, sortField.getRating());
-                    }
-                }
-            } else if (sortField.getRating() != null) {
-                this.moviesList = new ContextForSort(new SortRating())
-                        .executeStrategy(moviesList, sortField.getRating());
-            } else {
-                this.moviesList = new ContextForSort(new SortDuration())
-                        .executeStrategy(moviesList, sortField.getDuration());
-            }
-        }
-    }
-
-    private void addPOJOWithPopulatedOutput(final ArrayNode jsonOutput,
-                                                   final Page currentPage,
-                                                   final ObjectMapper objectMapper,
-                                            final List<Movie> movies) {
-        ObjectNode node = objectMapper.valueToTree(Output
-                .builder()
-                .currentMoviesList(movies)
-                .currentUser(currentPage.getCurrentUser())
-                .build());
-        jsonOutput.add(node);
-    }
-
-    private void addErrorPOJOToArrayNode(final ArrayNode jsonOutput,
-                                         final ObjectMapper objectMapper) {
-        ObjectNode node = objectMapper.valueToTree(Output
-                .builder()
-                .error("Error")
-                .currentMoviesList(new ArrayList<>())
-                .build());
-        jsonOutput.add(node);
     }
 
     private void populateCurrentPage(final String pageName, final List<Movie> movies,
