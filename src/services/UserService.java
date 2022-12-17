@@ -3,7 +3,9 @@ package services;
 import io.Credentials;
 import io.Input;
 import io.User;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public final class UserService {
 
     /**

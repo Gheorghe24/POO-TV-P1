@@ -26,6 +26,7 @@ import strategy.filter.FilterName;
 import strategy.sort.ContextForSort;
 import strategy.sort.SortDuration;
 import strategy.sort.SortRating;
+import utils.Utils;
 
 @Getter
 @Setter
@@ -193,10 +194,11 @@ public final class Page {
             case "buy premium account" -> {
                 if (this.getName().equals("upgrades")) {
                     var count = currentUser.getTokensCount();
-                    if (count >= 10 && !currentUser.getCredentials().getAccountType().equals(
+                    if (count >= Utils.TOKEN_COST
+                            && !currentUser.getCredentials().getAccountType().equals(
                             "premium")) {
                         currentUser.getCredentials().setAccountType("premium");
-                        currentUser.setTokensCount(count - 10);
+                        currentUser.setTokensCount(count - Utils.TOKEN_COST);
                     } else {
                         addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                     }
@@ -242,16 +244,21 @@ public final class Page {
         }
     }
 
-    private void rateMovie(ArrayNode jsonOutput, Action action, ObjectMapper objectMapper,
-                           Input input) {
-        if (currentUser.getWatchedMovies().isEmpty() || action.getRate() < 1 || action.getRate() > 5) {
+    private void rateMovie(final ArrayNode jsonOutput, final Action action,
+                           final ObjectMapper objectMapper,
+                           final Input input) {
+        if (currentUser.getWatchedMovies().isEmpty()
+                || action.getRate() < 1
+                || action.getRate() > Utils.MAXIMUM_RATE) {
             addErrorPOJOToArrayNode(jsonOutput, objectMapper);
             return;
         }
         if (!getMoviesByName(extractMovieName(action), currentUser.getWatchedMovies()).isEmpty()) {
-            Movie movie = getMoviesByName(extractMovieName(action), currentUser.getWatchedMovies()).get(0);
+            Movie movie = getMoviesByName(extractMovieName(action),
+                    currentUser.getWatchedMovies()).get(0);
             int counterOfRatings = movie.getNumRatings();
-            movie.setRating((movie.getRating() * counterOfRatings + action.getRate()) / (counterOfRatings + 1));
+            movie.setRating((movie.getRating() * counterOfRatings + action.getRate())
+                    / (counterOfRatings + 1));
             updateMovieInAllObjects(movie, input);
             currentUser.getRatedMovies().add(movie);
             addPOJOWithPopulatedOutput(jsonOutput, this,
@@ -274,7 +281,8 @@ public final class Page {
         }
         if (!getMoviesByName(action.getMovie(), currentUser.getWatchedMovies()).isEmpty()) {
             Movie movie =
-                    getMoviesByName(extractMovieName(action), currentUser.getWatchedMovies()).get(0);
+                    getMoviesByName(extractMovieName(action),
+                            currentUser.getWatchedMovies()).get(0);
             movie.setNumLikes(movie.getNumLikes() + 1);
             currentMovie = new Movie(movie);
             updateMovieInAllObjects(movie, inputData);
@@ -314,7 +322,7 @@ public final class Page {
     /**
      * Increment number of likes for every list containing movie.name
      */
-    public void updateMovieInAllObjects(final Movie movie, Input input) {
+    public void updateMovieInAllObjects(final Movie movie, final Input input) {
         input.getUsers().forEach((x) -> {
             x.getWatchedMovies().forEach((y) -> {
                 if (y.getName().equals(movie.getName())) {
@@ -341,7 +349,7 @@ public final class Page {
                 }
             });
         });
-        input.getMovies().forEach(m ->{
+        input.getMovies().forEach(m -> {
             if (m.getName().equals(movie.getName())) {
                 input.getMovies().set(input.getMovies().indexOf(m), new Movie(movie));
             }
@@ -350,7 +358,7 @@ public final class Page {
 
 
 
-    private String extractMovieName(Action action) {
+    private String extractMovieName(final Action action) {
         if (action.getMovie() != null) {
             return action.getMovie();
         } else {

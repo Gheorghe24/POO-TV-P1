@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import utils.Utils;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public final class User {
     @Builder.Default
     private Integer tokensCount = 0;
     @Builder.Default
-    private Integer numFreePremiumMovies = 15;
+    private Integer numFreePremiumMovies = Utils.FREE_PREMIUM_MOVIES;
     @Builder.Default
     private ArrayList<Movie> purchasedMovies = new ArrayList<>();
     @Builder.Default
@@ -50,6 +51,6 @@ public final class User {
         this.likedMovies = new ArrayList<>();
         this.ratedMovies = new ArrayList<>();
         this.tokensCount = 0;
-        this.numFreePremiumMovies = 15;
+        this.numFreePremiumMovies = Utils.FREE_PREMIUM_MOVIES;
     }
 }

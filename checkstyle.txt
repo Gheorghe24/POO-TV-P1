@@ -1,21 +1,2 @@
 Starting audit...
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:196:34: '10' is a magic number. [MagicNumber]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:199:60: '10' is a magic number. [MagicNumber]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:245:28: Parameter jsonOutput should be final. [FinalParameters]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:245:50: Parameter action should be final. [FinalParameters]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:245:65: Parameter objectMapper should be final. [FinalParameters]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:246:28: Parameter input should be final. [FinalParameters]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:247: Line is longer than 100 characters (found 103). [LineLength]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:247:100: '5' is a magic number. [MagicNumber]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:252: Line is longer than 100 characters (found 107). [LineLength]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:254: Line is longer than 100 characters (found 112). [LineLength]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:277: Line is longer than 100 characters (found 101). [LineLength]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:317:60: Parameter input should be final. [FinalParameters]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:344:37: '->' is not followed by whitespace. [WhitespaceAround]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:344:39: '{' is not preceded with whitespace. [WhitespaceAround]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:353:37: Parameter action should be final. [FinalParameters]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\io\User.java:20:44: '15' is a magic number. [MagicNumber]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\io\User.java:53:37: '15' is a magic number. [MagicNumber]
-[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\strategy\filter\FilterName.java:4:8: Unused import - java.util.ArrayList. [UnusedImports]
 Audit done.
-Checkstyle ends with 18 errors.
