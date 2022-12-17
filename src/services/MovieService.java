@@ -50,17 +50,18 @@ public final class MovieService {
      */
     public List<Movie> filterInputMoviesByContains(final Contains containsField,
                                                    final List<Movie> moviesList) {
+        List<Movie> filteredList = new ArrayList<>(moviesList);
         if (containsField != null) {
             if (containsField.getActors() != null) {
-                return new ContextForFilter<>(new FilterActor())
+                filteredList = new ContextForFilter<>(new FilterActor())
                         .executeStrategy(moviesList, containsField.getActors());
             }
             if (containsField.getGenre() != null) {
-                return new ContextForFilter<>(new FilterGenre())
-                        .executeStrategy(moviesList, containsField.getGenre());
+                filteredList = new ContextForFilter<>(new FilterGenre())
+                        .executeStrategy(filteredList, containsField.getGenre());
             }
         }
-        return moviesList;
+        return filteredList;
     }
 
     /**
