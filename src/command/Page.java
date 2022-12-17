@@ -10,7 +10,6 @@ import io.Movie;
 import io.Sort;
 import io.User;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -223,7 +222,7 @@ public final class Page {
 
             case "purchase" -> {
                 if (this.getName().equals("upgrades") || this.getName().equals("see details")) {
-                    purchaseMovie(jsonOutput, action, objectMapper);
+                    movieService.purchaseMovie(jsonOutput, action, objectMapper, this);
                 } else {
                     outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
@@ -231,7 +230,7 @@ public final class Page {
 
             case "watch" -> {
                 if (this.getName().equals("see details")) {
-                    watchMovie(jsonOutput, action, objectMapper);
+                    movieService.watchMovie(jsonOutput, action, objectMapper, this);
                 } else {
                     outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
@@ -239,7 +238,7 @@ public final class Page {
 
             case "like" -> {
                 if (this.getName().equals("see details")) {
-                    likeMovie(jsonOutput, action, objectMapper, inputData);
+                    movieService.likeMovie(jsonOutput, action, objectMapper, inputData, this);
                 } else {
                     outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
@@ -247,7 +246,8 @@ public final class Page {
 
             case "rate" -> {
                 if (this.getName().equals("see details")) {
-                    rateMovie(jsonOutput, action, objectMapper, inputData);
+                    movieService.rateMovie(jsonOutput, action, objectMapper,
+                            inputData, this);
                 } else {
                     outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
                 }
@@ -255,128 +255,6 @@ public final class Page {
 
             default -> {
             }
-        }
-    }
-
-    /**
-     * checked failed cases and wrote added error to JSON
-     * checked if the Movie exists in watched movies
-     * Calculated average rating and added Movie to Rated
-     * Updated Ratings in every
-     */
-    private void rateMovie(final ArrayNode jsonOutput, final Action action,
-                           final ObjectMapper objectMapper,
-                           final Input input) {
-        if (currentUser.getWatchedMovies().isEmpty()
-                || action.getRate() < 1
-                || action.getRate() > Utils.MAXIMUM_RATE) {
-            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
-            return;
-        }
-        if (!movieService.getMoviesByName(movieService.extractMovieName(action, currentMovie),
-                currentUser.getWatchedMovies()).isEmpty()) {
-            Movie movie = movieService.getMoviesByName(movieService.extractMovieName(action,
-                            currentMovie),
-                    currentUser.getWatchedMovies()).get(0);
-            int counterOfRatings = movie.getNumRatings();
-            movie.setRating((movie.getRating() * counterOfRatings + action.getRate())
-                    / (counterOfRatings + 1));
-            movie.setNumRatings(movie.getNumRatings() + 1);
-            movieService.updateMovieInAllObjects(movie, input, currentUser);
-            currentUser.getRatedMovies().add(movie);
-            outputService.addPOJOWithPopulatedOutput(jsonOutput, this,
-                    objectMapper, new ArrayList<>(Collections.singleton(
-                            new Movie(movie))));
-        } else {
-            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
-        }
-    }
-
-    /**
-     * verify that first the movie was watched
-     * increment number of likes for every list containing him
-     */
-    private void likeMovie(final ArrayNode jsonOutput, final Action action,
-                           final ObjectMapper objectMapper, final Input inputData) {
-        if (currentUser.getWatchedMovies().isEmpty()) {
-            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
-            return;
-        }
-        if (!movieService.getMoviesByName(action.getMovie(),
-                currentUser.getWatchedMovies()).isEmpty()) {
-            Movie movie =
-                    movieService.getMoviesByName(movieService.extractMovieName(action,
-                                    currentMovie),
-                            currentUser.getWatchedMovies()).get(0);
-            movie.setNumLikes(movie.getNumLikes() + 1);
-            currentMovie = new Movie(movie);
-            movieService.updateMovieInAllObjects(movie, inputData, currentUser);
-            currentUser.getLikedMovies().add(movie);
-            outputService.addPOJOWithPopulatedOutput(jsonOutput, this,
-                    objectMapper, new ArrayList<>(Collections.singleton(
-                            new Movie(movie))));
-        } else {
-            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
-        }
-    }
-
-    private void watchMovie(final ArrayNode jsonOutput, final Action action,
-                            final ObjectMapper objectMapper) {
-        if (currentUser.getPurchasedMovies().isEmpty()) {
-            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
-        } else {
-            String movieName = movieService.extractMovieName(action, currentMovie);
-            List<Movie> availableFromPurchasedMovies = movieService.getMoviesByName(movieName,
-                    currentUser.getPurchasedMovies());
-            List<Movie> notFoundInWatchedMovies = movieService.getMoviesByName(movieName,
-                    currentUser.getWatchedMovies());
-            if (availableFromPurchasedMovies.isEmpty()) {
-                outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
-            } else if (notFoundInWatchedMovies.isEmpty()) {
-                this.currentMovie = availableFromPurchasedMovies.get(0);
-                currentUser.getWatchedMovies().add(
-                        new Movie(currentMovie));
-
-                outputService.addPOJOWithPopulatedOutput(jsonOutput, this,
-                        objectMapper, new ArrayList<>(Collections.singleton(
-                                new Movie(currentMovie))));
-            }
-        }
-    }
-
-    private void purchaseMovie(final ArrayNode jsonOutput, final Action action,
-                               final ObjectMapper objectMapper) {
-        List<Movie> availableMovies;
-        if (action.getMovie() != null) {
-            availableMovies = movieService.getMoviesByName(action.getMovie(), this.moviesList);
-        } else {
-            availableMovies = movieService.getMoviesByName(currentMovie.getName(), this.moviesList);
-        }
-        if (!availableMovies.isEmpty()) {
-            var firstAvailableMovie = availableMovies.get(0);
-            if (!currentUser.getPurchasedMovies().contains(firstAvailableMovie)) {
-                if (currentUser.getCredentials().getAccountType().equals("premium")
-                        && currentUser.getNumFreePremiumMovies() > 0) {
-                    currentUser.setNumFreePremiumMovies(
-                            currentUser.getNumFreePremiumMovies() - 1);
-                    currentUser.getPurchasedMovies().add(
-                            new Movie(firstAvailableMovie));
-                    outputService.addPOJOWithPopulatedOutput(jsonOutput, this,
-                            objectMapper, availableMovies);
-                } else if (currentUser.getTokensCount() >= 2) {
-                    currentUser.setTokensCount(currentUser.getTokensCount() - 2);
-                    currentUser.getPurchasedMovies().add(
-                            new Movie(firstAvailableMovie));
-                    outputService.addPOJOWithPopulatedOutput(jsonOutput, this,
-                            objectMapper, availableMovies);
-                } else {
-                    outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
-                }
-            } else {
-                outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
-            }
-        } else {
-            outputService.addErrorPOJOToArrayNode(jsonOutput, objectMapper);
         }
     }
 

@@ -24,15 +24,6 @@ public final class Movie {
     private Double rating = 0.00;
     private Integer numRatings = 0;
 
-    /**
-     * For Each new Test, I reinitialize movie ratings and likes
-     */
-    public void resetMovies() {
-        this.numLikes = 0;
-        this.numRatings = 0;
-        this.rating = 0.00;
-    }
-
     public Movie(final Movie movie) {
         this.name = movie.getName();
         this.year = movie.getYear();

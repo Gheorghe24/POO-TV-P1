@@ -20,8 +20,11 @@ public final class Main {
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         ArrayNode arrayNode = objectMapper.createArrayNode();
 
-        Platform platform = new Platform(input, arrayNode, Page.builder().build(),
-                new ArrayList<>());
+        Platform platform = Platform.getInstance();
+        platform.setInputData(input);
+        platform.setOutput(arrayNode);
+        platform.setCommandList(new ArrayList<>());
+        platform.setCurrentPage(Page.builder().build());
         platform.prepareForNewEntry();
         platform.executeListOfActions();
         objectWriter.writeValue(new File(args[1]), arrayNode);

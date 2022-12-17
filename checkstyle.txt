@@ -1,2 +1,8 @@
 Starting audit...
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\command\Page.java:13:8: Unused import - java.util.Collections. [UnusedImports]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\services\MovieService.java:181:5: Missing a Javadoc comment. [MissingJavadocMethod]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\services\MovieService.java:182:64: Parameter currentPage should be final. [FinalParameters]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\services\MovieService.java:202: Line is longer than 100 characters (found 115). [LineLength]
+[ERROR] D:\Anul2\POO\ProjectPartOne\.\src\services\MovieService.java:218:5: Missing a Javadoc comment. [MissingJavadocMethod]
 Audit done.
+Checkstyle ends with 5 errors.

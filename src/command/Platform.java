@@ -5,18 +5,35 @@ import io.Credentials;
 import io.Input;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import services.MovieService;
 import services.OutputService;
 import services.UserService;
 
-@AllArgsConstructor
+@Getter
+@Setter
 public final class Platform {
     private Input inputData;
     private ArrayNode output;
     private Page currentPage;
-
     private List<ICommand> commandList;
+
+    private static Platform platform = null;
+
+    private Platform() {
+    }
+
+    /**
+     * returned platform instance
+     */
+    public static Platform getInstance() {
+        if (platform == null) {
+            platform = new Platform();
+        }
+
+        return platform;
+    }
 
     /**
      * @param command object
