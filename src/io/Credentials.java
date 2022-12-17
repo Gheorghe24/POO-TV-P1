@@ -1,16 +1,14 @@
 package io;
 
 import java.util.Objects;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@Builder
 @NoArgsConstructor
 public final class Credentials {
     private String name;

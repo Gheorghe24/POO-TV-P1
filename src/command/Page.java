@@ -258,6 +258,12 @@ public final class Page {
         }
     }
 
+    /**
+     * checked failed cases and wrote added error to JSON
+     * checked if the Movie exists in watched movies
+     * Calculated average rating and added Movie to Rated
+     * Updated Ratings in every
+     */
     private void rateMovie(final ArrayNode jsonOutput, final Action action,
                            final ObjectMapper objectMapper,
                            final Input input) {

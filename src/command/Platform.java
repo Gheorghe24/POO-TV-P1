@@ -3,8 +3,6 @@ package command;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.Credentials;
 import io.Input;
-import io.Movie;
-import io.User;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -22,7 +20,7 @@ public final class Platform {
 
     /**
      * @param command object
-     * method for Invoker Class
+     *                method for Invoker Class
      */
     public void takeCommand(final ICommand command) {
         commandList.add(command);
@@ -67,7 +65,5 @@ public final class Platform {
                 .outputService(new OutputService())
                 .userService(new UserService())
                 .build();
-        inputData.getUsers().forEach(User::prepareNewUser);
-        inputData.getMovies().forEach(Movie::resetMovies);
     }
 }
