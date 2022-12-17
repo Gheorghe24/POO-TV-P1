@@ -10,6 +10,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import services.MovieService;
 import services.OutputService;
+import services.UserService;
 
 @AllArgsConstructor
 public final class Platform {
@@ -64,6 +65,7 @@ public final class Platform {
                 .moviesList(new ArrayList<>())
                 .movieService(new MovieService())
                 .outputService(new OutputService())
+                .userService(new UserService())
                 .build();
         inputData.getUsers().forEach(User::prepareNewUser);
         inputData.getMovies().forEach(Movie::resetMovies);

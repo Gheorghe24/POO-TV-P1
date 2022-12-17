@@ -34,6 +34,7 @@ public final class Page {
     private Movie currentMovie;
     private MovieService movieService;
     private OutputService outputService;
+    private UserService userService;
 
     /**
      * @param jsonOutput Output to add Json Objects
@@ -77,9 +78,16 @@ public final class Page {
                 break;
             case "see details" :
                 if (this.getCurrentUser() != null && this.getName().equals("movies")) {
-                    List<Movie> movies = new ContextForFilter<>(new FilterCountry())
+                    List<Movie> movies;
+                    if (currentMovie != null) {
+                    movies = new ContextForFilter<>(new FilterCountry())
                             .executeStrategy(input.getMovies(),
                                     currentUser.getCredentials().getCountry());
+                    } else {
+                        movies = new ContextForFilter<>(new FilterCountry())
+                                .executeStrategy(this.moviesList,
+                                        currentUser.getCredentials().getCountry());
+                    }
                     List<Movie> foundMovie = new ContextForFilter<>(new FilterName())
                             .executeStrategy(movies,
                                     action.getMovie());
@@ -115,7 +123,6 @@ public final class Page {
     public void onPage(final ArrayNode jsonOutput, final Action action,
                        final Input inputData, final Credentials credentials) {
         ObjectMapper objectMapper = new ObjectMapper();
-        UserService userService = new UserService();
         String feature = action.getFeature();
         switch (feature) {
             case "login" -> {
@@ -185,7 +192,7 @@ public final class Page {
                     var balance =
                             Integer.parseInt(this.getCurrentUser().getCredentials().getBalance());
                     var count = Integer.parseInt(action.getCount());
-                    if (balance > count) {
+                    if (balance >= count) {
                         currentUser.setTokensCount(count);
                         currentUser.getCredentials().setBalance(String.valueOf(balance - count));
                     } else {
@@ -370,6 +377,5 @@ public final class Page {
         this.setCurrentMovie(movie);
         this.setCurrentUser(user);
     }
-
 
 }

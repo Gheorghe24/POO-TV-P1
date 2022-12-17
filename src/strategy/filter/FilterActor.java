@@ -12,7 +12,7 @@ public final class FilterActor implements IFilterStrategy<ArrayList<String>> {
                 .stream()
                 .filter(movie
                         -> list.stream()
-                        .anyMatch(elem ->
+                        .allMatch(elem ->
                                 movie.getActors()
                                         .contains(elem)))
                         .collect(Collectors.toList());

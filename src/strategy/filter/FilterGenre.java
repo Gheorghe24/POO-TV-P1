@@ -13,7 +13,7 @@ public final class FilterGenre implements IFilterStrategy<ArrayList<String>> {
                 .filter(movie
                         -> listGenres.stream()
                         .anyMatch(elem ->
-                                movie.getActors()
+                                movie.getGenres()
                                         .contains(elem)))
                 .collect(Collectors.toList());
     }
